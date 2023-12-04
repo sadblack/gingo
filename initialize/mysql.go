@@ -84,22 +84,29 @@ func (g *_gorm) Config(prefix string, singular bool) *gorm.Config {
 
 }
 
+// GormMysql 这部分是打算建立连接
 func GormMysql() *gorm.DB {
+	//获取 配置文件里， mysql 部分的配置
 	m := config.GVA_CONFIG.Mysql
+	//如果没有指定 数据库名称， 这活儿就没法干了，直接返回
 	if m.Dbname == "" {
 		return nil
 	}
+	//打印一下 mysql 的配置信息
 	fmt.Println(m.Dsn())
 	mysqlConfig := mysql.Config{
 		DSN:                       m.Dsn(), // DSN data source name
 		DefaultStringSize:         191,     // string 类型字段的默认长度
 		SkipInitializeWithVersion: false,   // 根据版本自动配置
 	}
+	//建立连接，配置一些参数，并返回
 	if db, err := gorm.Open(mysql.New(mysqlConfig), orm.Config(m.Prefix, m.Singular)); err != nil {
 		return nil
 	} else {
 		sqlDB, _ := db.DB()
+		//最大 空闲 连接数
 		sqlDB.SetMaxIdleConns(m.MaxIdleConns)
+		//最大打开的连接数
 		sqlDB.SetMaxOpenConns(m.MaxOpenConns)
 		return db
 	}

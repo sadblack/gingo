@@ -18,12 +18,14 @@ func Init(r *gin.Engine, a Admin) {
 			User: auth.BaseUser{},
 		}
 	}
+	//添加一些 url 路径 -> controller 的映射，这里返回的是 html 页面，不是json
 	r.HTMLRender = a.Render()
 	r.GET(LoginPath, a.LoginView)
 	r.GET(RegisterPath, a.RegisterView)
 	r.POST(LoginPath, a.Login)
 	r.POST(RegisterPath, a.Register)
 
+	//这里也是添加了一些路径，不过这些带着参数呢
 	g := r.Group(HomePath)
 	g.Use(a.Auth())
 	g.GET("/", a.Home)

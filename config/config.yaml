@@ -11,10 +11,10 @@ jwt:
   issuer: 'gingo'
 
 mysql:
-  path: 'db'
+  path: 'localhost'
   port: '3306'
   config: 'charset=utf8mb4&parseTime=True&loc=Local'
-  db-name: 'gingo'
+  db-name: 'test'
   username: 'root'
   password: '123456'
   prefix: "t_" # 全局表前缀，单独定义 TableName 则不生效

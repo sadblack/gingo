@@ -5,6 +5,7 @@ import (
 	"github.com/songcser/gingo/initialize"
 )
 
+// 创建表
 func main() {
 	config.GVA_VP = initialize.Viper()
 	config.GVA_DB = initialize.Gorm() // gorm连接数据库

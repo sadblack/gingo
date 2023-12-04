@@ -12,6 +12,10 @@ import (
 	"net/http"
 )
 
+// Admin
+// 定义了一些处理方法，
+// gin.Context, 里面有 httpRequest、 httpResponse、 filter、等各种东西
+// /*
 type Admin interface {
 	LoginView(c *gin.Context)
 	RegisterView(c *gin.Context)
@@ -44,25 +48,30 @@ type BaseAdmin struct {
 }
 
 func (BaseAdmin) LoginView(c *gin.Context) {
+	//登陆页面
 	c.HTML(200, "login", gin.H{})
 }
 
 func (BaseAdmin) RegisterView(c *gin.Context) {
+	//注册页面
 	c.HTML(200, "register", gin.H{})
 }
 
+// Login 登陆逻辑
 func (b BaseAdmin) Login(c *gin.Context) {
 	err := b.User.Login(c)
 	utils.CheckError(err)
 	c.Redirect(http.StatusFound, HomePath)
 }
 
+// Register 注册逻辑
 func (b BaseAdmin) Register(c *gin.Context) {
 	err := b.User.Register(c)
 	utils.CheckError(err)
 	c.Redirect(http.StatusFound, HomePath)
 }
 
+// Auth 认证逻辑，这是一个 filter
 func (b BaseAdmin) Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.GVA_CONFIG.Admin.Auth {
@@ -77,6 +86,7 @@ func (b BaseAdmin) Auth() gin.HandlerFunc {
 	}
 }
 
+// Home 主页，页面
 func (b BaseAdmin) Home(c *gin.Context) {
 	admins := b.GetModels()
 	user, _ := c.Get("user")
@@ -86,6 +96,7 @@ func (b BaseAdmin) Home(c *gin.Context) {
 	})
 }
 
+// 详情，页面
 func (b BaseAdmin) List(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -133,6 +144,7 @@ func (b BaseAdmin) List(c *gin.Context) {
 	c.HTML(200, "index", h)
 }
 
+// AddView 创建应用，页面
 func (b BaseAdmin) AddView(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -148,6 +160,7 @@ func (b BaseAdmin) AddView(c *gin.Context) {
 	c.HTML(200, "add", h)
 }
 
+// AddItem 添加数据
 func (b BaseAdmin) AddItem(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -157,6 +170,7 @@ func (b BaseAdmin) AddItem(c *gin.Context) {
 	}
 }
 
+// ViewItem 编辑，页面
 func (b BaseAdmin) ViewItem(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -174,6 +188,7 @@ func (b BaseAdmin) ViewItem(c *gin.Context) {
 	c.HTML(200, "edit", h)
 }
 
+// EditItem 修改
 func (b BaseAdmin) EditItem(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -183,6 +198,7 @@ func (b BaseAdmin) EditItem(c *gin.Context) {
 	}
 }
 
+// DeleteItem 删除
 func (b BaseAdmin) DeleteItem(c *gin.Context) {
 	obj := c.Param("model")
 	a := b.GetModel(obj)
@@ -192,6 +208,7 @@ func (b BaseAdmin) DeleteItem(c *gin.Context) {
 	}
 }
 
+// Render 渲染页面，不需要看
 func (BaseAdmin) Render() multitemplate.Renderer {
 	r := multitemplate.NewRenderer()
 	r.AddFromFs("home", templates.Staticfiles, "home.html", "sidebar.html", "header.html")
@@ -203,10 +220,12 @@ func (BaseAdmin) Render() multitemplate.Renderer {
 	return r
 }
 
+// GetModels 获取所有的处理器
 func (BaseAdmin) GetModels() []ModelAdmin {
 	return factory.GetAll()
 }
 
+// GetModel 根据名字，获取处理器
 func (BaseAdmin) GetModel(name string) ModelAdmin {
 	return factory.Get(name)
 }
